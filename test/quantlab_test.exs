@@ -19,6 +19,46 @@ defmodule QuantlabTest do
     end
   end
 
+  describe "update_volume/2" do
+    test "adds qty to the volume when there have been no trades" do
+      assert %{volume: 2} = Quantlab.update_volume(%{}, 2)
+    end
+
+    test "adds qty to the volume when there have been some trades" do
+      assert %{volume: 102} = Quantlab.update_volume(%{volume: 100}, 2)
+    end
+  end
+
+  describe "update_total_price_and_quantity/2" do
+    test "We add to total price and quantity when there is nothing" do
+      assert %{total_price: 20, total_quantity: 2} =
+               Quantlab.update_total_price_and_quantity(%{}, 2, 10)
+    end
+
+    test "we add to the totals" do
+      assert %{total_price: 120, total_quantity: 3} =
+               %{}
+               |> Quantlab.update_total_price_and_quantity(2, 10)
+               |> Quantlab.update_total_price_and_quantity(1, 100)
+    end
+  end
+
+  describe "update_max_price/2" do
+    test "when there is nothing in the symbol summary" do
+      assert %{max_price: 100} = Quantlab.update_max_price(%{}, 100)
+    end
+
+    test "when there is a larger price we update" do
+      assert %{max_price: 500} =
+               Quantlab.update_max_price(%{}, 100) |> Quantlab.update_max_price(500)
+    end
+
+    test "when there is a smaller price we dont" do
+      assert %{max_price: 500} =
+               Quantlab.update_max_price(%{}, 500) |> Quantlab.update_max_price(100)
+    end
+  end
+
   describe "Quantlab.trade_summaries/1" do
     test "We summarize a test/fixtures/simple_example_trades.csv" do
       mock_file_stream()
