@@ -1,5 +1,11 @@
 # Quantlab
 
+## Output
+
+Answer can be found in `lib/output.csv`
+
+## Instructions
+
 This problem will require you to write an application that will read an input file ('input.csv') and write out a new file calculated from the inputs.
 
 We are looking for an easily extendable solution with a strong emphasis on readability, even though it may not seem required for this application. We will evaluate your submission based on the following criteria:
