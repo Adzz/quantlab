@@ -28,6 +28,7 @@ Pitfalls you want to avoid:
 _______________________________________________________________________________
 
 Input:
+
 The input file represents a very simplified stream of trades on an exchange.
 Each row represents a trade.  If you don't know what that means don't worry.
 The data can be thought of as a time series of values in columns:
@@ -37,6 +38,7 @@ The data can be thought of as a time series of values in columns:
 ```
 
 Definitions
+
 - TimeStamp is value indicating the microseconds since midnight.
 - Symbol is the 3-character unique identifier for a financial
   instrument (Stock, future etc.)
@@ -73,6 +75,7 @@ file should be a comma separate file with this format:
 ```
 <symbol>,<MaxTimeGap>,<Volume>,<WeightedAveragePrice>,<MaxPrice>
 ```
+
 The output should be sorted by symbol ascending ('aaa' should be first).
 
 Constraint:
