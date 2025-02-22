@@ -1,5 +1,6 @@
 defmodule Quantlab do
   @moduledoc """
+  Interview tech test
   """
   alias NimbleCSV.RFC4180, as: CSV
 
@@ -9,6 +10,11 @@ defmodule Quantlab do
   This approach assumes that the number of unique stock symbols is reasonable to fit in memory
   even if the total number of trades is not. If that is not the case we could adapt this to
   store the state of each symbol differently.
+
+  We just use a map to store the information as we go as the simplest way to approach this.
+  We could of course get arbitrarily more complicated depending on things like performance
+  requirements, number of unique symbols and so on. Using Agents, ETS, persistent term or
+  even a SQL database are all options depending on future requirements.
   """
   def trade_summaries(input_path, output_path) do
     output =
@@ -85,7 +91,6 @@ defmodule Quantlab do
   20 shares of aaa @ 18
   5 shares of aaa @ 7
   Weighted Average Price = ((20 * 18) + (5 * 7)) / (20 + 5) = 15
-
   """
   def update_total_price_and_quantity(symbol_summary, quantity, price) do
     total_quantity = Map.get(symbol_summary, :total_quantity, 0)
