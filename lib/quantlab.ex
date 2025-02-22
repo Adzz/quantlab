@@ -31,9 +31,9 @@ defmodule Quantlab do
           |> Map.get(symbol, %{})
           |> update_max_time_gap(timestamp)
           |> update_volume(quantity)
+          |> update_max_price(price)
           # These are used for weighted_average_price at the end.
           |> update_total_price_and_quantity(quantity, price)
-          |> update_max_price(price)
 
         Map.put(summaries, symbol, symbol_summary)
       end)
