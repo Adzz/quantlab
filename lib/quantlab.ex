@@ -4,31 +4,48 @@ defmodule Quantlab do
   alias NimbleCSV.RFC4180, as: CSV
 
   @doc """
-  Summarises the provided list of trades
+  Summarises the provided list of trades.
+
+  This approach assumes that the number of unique stock symbols is reasonable to fit in memory
+  even if the total number of trades is not. If that is not the case we could adapt this to
+  store the state of each symbol differently.
   """
-  # <symbol>,<MaxTimeGap>,<Volume>,<WeightedAveragePrice>,<MaxPrice>
-  def trade_summaries(path) do
-    Quantlab.File.stream!(path, :line)
-    |> CSV.parse_stream()
-    |> Enum.reduce(%{}, fn [timestamp, symbol, quantity, price], summaries ->
-      # Cast data
-      timestamp = cast_int(timestamp)
-      price = cast_int(price)
-      quantity = cast_int(quantity)
+  def trade_summaries(input_path, output_path) do
+    output =
+      Quantlab.File.stream!(input_path, :line)
+      |> CSV.parse_stream()
+      |> Enum.reduce(%{}, fn [timestamp, symbol, quantity, price], summaries ->
+        # Cast data
+        timestamp = cast_int(timestamp)
+        price = cast_int(price)
+        quantity = cast_int(quantity)
 
-      symbol_summary = Map.get(summaries, symbol, %{})
+        symbol_summary =
+          summaries
+          |> Map.get(symbol, %{})
+          |> update_max_time_gap(timestamp)
+          |> update_volume(quantity)
+          # These are used for weighted_average_price at the end.
+          |> update_total_price_and_quantity(quantity, price)
+          |> update_max_price(price)
 
-      symbol_summary =
-        symbol_summary
-        |> update_max_time_gap(timestamp)
-        |> update_volume(quantity)
-        # These are used for weighted_average_price at the end.
-        |> update_total_price_and_quantity(quantity, price)
-        |> update_max_price(price)
+        Map.put(summaries, symbol, symbol_summary)
+      end)
+      |> Enum.map(fn {symbol, summary} ->
+        %{
+          max_time_gap: max_time_gap,
+          volume: volume,
+          total_quantity: total_quantity,
+          total_price: total_price,
+          max_price: max_price
+        } = summary
 
-      Map.put(summaries, symbol, symbol_summary)
-      # |> IO.inspect(limit: :infinity, charlists: :as_lists, label: "")
-    end)
+        weighted_average_price = div(total_price, total_quantity)
+        [symbol, max_time_gap, volume, weighted_average_price, max_price]
+      end)
+      |> CSV.dump_to_iodata()
+
+    Quantlab.File.write!(output_path, output, [])
   end
 
   defp cast_int(input) do

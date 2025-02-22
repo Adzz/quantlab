@@ -62,15 +62,18 @@ defmodule QuantlabTest do
   describe "Quantlab.trade_summaries/1" do
     test "We summarize a test/fixtures/simple_example_trades.csv" do
       mock_file_stream()
-      path = "./test/fixtures/simple_example_trades.csv"
+      input_path = "./test/fixtures/simple_example_trades.csv"
+      output_path = "output.csv"
 
-      # expected_output = """
-      # aaa,5787,40,1161,1222
-      # aab,6103,69,810,907
-      # aac,3081,41,559,638
-      # """
+      expect(Quantlab.FileMock, :write!, fn ^output_path, contents, [] ->
+        assert IO.iodata_to_binary(contents) == """
+               aaa,5787,40,1161,1222\r
+               aab,6103,69,810,907\r
+               aac,3081,41,559,638\r
+               """
+      end)
 
-      Quantlab.trade_summaries(path)
+      Quantlab.trade_summaries(input_path, output_path)
     end
   end
 
