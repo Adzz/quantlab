@@ -75,6 +75,22 @@ defmodule QuantlabTest do
 
       Quantlab.trade_summaries(input_path, output_path)
     end
+
+    test "The output is alphabetical test/fixtures/alphabetical.csv" do
+      mock_file_stream()
+      input_path = "./test/fixtures/alphabetical.csv"
+      output_path = "output.csv"
+
+      expect(Quantlab.FileMock, :write!, fn ^output_path, contents, [] ->
+        assert IO.iodata_to_binary(contents) == """
+               aab,6103,69,810,907\r
+               aac,3081,41,559,638\r
+               zzz,5787,40,1161,1222\r
+               """
+      end)
+
+      Quantlab.trade_summaries(input_path, output_path)
+    end
   end
 
   defp mock_file_stream() do

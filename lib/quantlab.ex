@@ -43,6 +43,7 @@ defmodule Quantlab do
         weighted_average_price = div(total_price, total_quantity)
         [symbol, max_time_gap, volume, weighted_average_price, max_price]
       end)
+      |> Enum.sort_by(fn [symbol | _] -> symbol end)
       |> CSV.dump_to_iodata()
 
     Quantlab.File.write!(output_path, output, [])
